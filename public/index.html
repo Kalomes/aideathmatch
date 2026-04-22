@@ -1,0 +1,1798 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Prediction Deathmatch</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=clash-display@500,600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+html, body {
+  background: #07080b;
+  min-height: 100%;
+  overscroll-behavior: none;
+}
+
+html {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(39,224,138,.08), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(139,92,246,.10), transparent 30%),
+    linear-gradient(180deg,#07080b 0%,#0b0d12 100%);
+}
+
+:root{
+  --bg:#08090c;
+  --bg2:#0f1117;
+  --panel:#11141b;
+  --panel2:#151925;
+  --line:rgba(255,255,255,.08);
+  --line2:rgba(255,255,255,.12);
+  --text:#eef2ff;
+  --muted:#8b93a7;
+  --faint:#596074;
+  --green:#27e08a;
+  --green2:#173827;
+  --red:#ff5d5d;
+  --red2:#3b1b22;
+  --violet:#8b5cf6;
+  --gold:#f3c969;
+  --shadow:0 20px 60px rgba(0,0,0,.35);
+  --radius:24px;
+  --radius-sm:16px;
+  --content:1440px;
+}
+
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(circle at 20% 0%, rgba(39,224,138,.08), transparent 30%),
+    radial-gradient(circle at 80% 20%, rgba(139,92,246,.10), transparent 30%),
+    linear-gradient(180deg,#07080b 0%,#0b0d12 100%);
+  color:var(--text);
+  font-family:'Satoshi',sans-serif;
+  min-height:100vh;
+}
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size:40px 40px;
+  mask-image:radial-gradient(circle at center, black 45%, transparent 100%);
+  opacity:.35;
+}
+
+.header{
+  max-width:var(--content);
+  margin:0 auto;
+  padding:28px 28px 14px;
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:20px;
+}
+.brand-block h1{
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(2rem,4vw,3.5rem);
+  line-height:.95;
+  letter-spacing:-.03em;
+}
+.header h1 span{
+  color:var(--violet);
+}
+.brand-sub{
+  color:var(--muted);
+  font-size:.88rem;
+  margin-top:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.header-right{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.head-pill{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  backdrop-filter:blur(18px);
+  padding:10px 14px;
+  border-radius:999px;
+  color:var(--muted);
+  font-size:.78rem;
+  white-space:nowrap;
+}
+
+.topbar{
+  max-width:var(--content);
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:220px 1fr 260px;
+  gap:16px;
+  padding:0 28px 16px;
+  align-items:stretch;
+}
+.topbar-left,.topbar-center,.topbar-right{
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--line);
+  border-radius:20px;
+  backdrop-filter:blur(18px);
+  min-height:84px;
+}
+.topbar-left{
+  padding:16px 18px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+.topbar-left div:first-child{
+  color:var(--faint)!important;
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+#roundLabel{
+  color:var(--text)!important;
+  font-size:1.1rem;
+  font-weight:700;
+  margin-top:5px;
+}
+.topbar-center{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:14px 20px;
+  color:#d7def0;
+  font-weight:700;
+  font-size:clamp(1rem,2vw,1.35rem);
+  letter-spacing:.02em;
+}
+.topbar-right{
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+.timer{
+  font-size:2rem;
+  font-weight:700;
+  color:#fff;
+  letter-spacing:-.03em;
+  font-family:'Clash Display',sans-serif;
+}
+.connect-btn{
+  background:linear-gradient(180deg, rgba(139,92,246,.18), rgba(139,92,246,.08));
+  border:1px solid rgba(139,92,246,.35);
+  color:#ddd6fe;
+  padding:11px 16px;
+  font-family:inherit;
+  font-size:.78rem;
+  cursor:pointer;
+  letter-spacing:.08em;
+  border-radius:14px;
+  font-weight:700;
+  transition:.2s ease;
+}
+.connect-btn:hover{transform:translateY(-1px);background:rgba(139,92,246,.18)}
+
+.arena{
+  position:relative;
+ z-index:0;
+  max-width:var(--content);
+  margin:8px auto 0;
+  padding:0 28px;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);
+  gap:22px;
+  align-items:start;
+}
+
+.vs-mid{
+  position:relative;
+  align-self:center;
+  justify-self:center;
+}
+
+.fight-card{
+  max-width:var(--content);
+    z-index:1;
+  margin:18px auto 24px;
+  padding:0;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:30px;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg, rgba(39,224,138,.09) 0%, rgba(39,224,138,0) 28%),
+    linear-gradient(225deg, rgba(255,93,93,.10) 0%, rgba(255,93,93,0) 28%),
+    linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
+  box-shadow:
+    0 30px 80px rgba(0,0,0,.42),
+    inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(20px);
+  position:relative;
+}
+
+.fight-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(90deg,
+      rgba(39,224,138,.06) 0%,
+      transparent 24%,
+      transparent 76%,
+      rgba(255,93,93,.07) 100%);
+  pointer-events:none;
+}
+
+.fight-card-top{
+  display:grid;
+  grid-template-columns:1fr 180px 1fr;
+  align-items:stretch;
+  gap:0;
+}
+
+.fight-side{
+  min-width:0;
+  padding:26px 28px 22px;
+  position:relative;
+}
+
+.fight-side.left{
+  border-right:1px solid rgba(255,255,255,.05);
+}
+
+.fight-side.right{
+  text-align:right;
+  border-left:1px solid rgba(255,255,255,.05);
+}
+
+.fight-side.left::after,
+.fight-side.right::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:4px;
+}
+
+.fight-side.left::after{
+  left:0;
+  background:linear-gradient(180deg, rgba(39,224,138,0), rgba(39,224,138,.95), rgba(39,224,138,0));
+}
+
+.fight-side.right::after{
+  right:0;
+  background:linear-gradient(180deg, rgba(255,93,93,0), rgba(255,93,93,.95), rgba(255,93,93,0));
+}
+
+.fight-side-label{
+  font-size:.66rem;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--faint);
+  margin-bottom:10px;
+}
+
+.fight-side-name{
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(1.5rem, 3.4vw, 3rem);
+  line-height:.88;
+  white-space:nowrap;
+  letter-spacing:-.025em;
+  word-spacing: 0.18em;
+  text-transform:uppercase;
+  color:#fff;
+  text-wrap:balance;
+}
+
+.fight-side-role{
+  margin-top:10px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:7px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.035);
+  font-size:.72rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#c3cad8;
+}
+
+.fight-center{
+  text-align:center;
+  min-width:160px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.fight-kicker{
+  font-size:.62rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:var(--faint);
+  margin-bottom:10px;
+}
+
+.fight-vs{
+  width:82px;
+  height:82px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-family:'Clash Display',sans-serif;
+  font-size:2rem;
+  line-height:1;
+  color:#fff;
+  margin:0 auto 10px;
+  border:1px solid rgba(255,255,255,.12);
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,.16), transparent 45%),
+    linear-gradient(180deg, #161a22, #0c0f15);
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.fight-round{
+  font-size:.84rem;
+  color:#d7dceb;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.fight-time:empty{
+  display:none;
+}
+
+.fight-card-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  padding:16px 24px 17px;
+  border-top:1px solid rgba(255,255,255,.06);
+  background:rgba(0,0,0,.12);
+}
+
+.fight-tagline{
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(.95rem, 1.5vw, 1.25rem);
+  color:#fff;
+  word-spacing: 0.15em; 
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+}
+
+.fight-subline{
+  font-size:.8rem;
+  color:#98a3bb;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+
+@media (max-width: 900px){
+  .fight-card-top{
+    grid-template-columns:1fr;
+  }
+
+  .fight-center{
+    order:-1;
+    padding:18px 18px 12px;
+    border-bottom:1px solid rgba(255,255,255,.05);
+  }
+
+  .fight-side,
+  .fight-side.right{
+    text-align:center;
+    border:none;
+    padding:20px 18px;
+  }
+
+  .fight-side.left{
+    border-bottom:1px solid rgba(255,255,255,.05);
+  }
+
+  .fight-side.left::after,
+  .fight-side.right::after{
+    display:none;
+  }
+
+  .fight-side-role{
+    justify-content:center;
+  }
+
+  .fight-card-bottom{
+    flex-direction:column;
+    text-align:center;
+  }
+
+  .fight-subline{
+    white-space:normal;
+  }
+}
+
+.bot-card{
+  border:1px solid var(--line2);
+  border-radius:28px;
+  overflow:hidden;
+  background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
+  backdrop-filter:blur(22px);
+  box-shadow:var(--shadow);
+}
+.bot-card.c1{
+  box-shadow:0 20px 60px rgba(39,224,138,.08);
+}
+.bot-card.c2{
+  box-shadow:0 20px 60px rgba(255,93,93,.08);
+}
+.bot-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding:22px 24px 16px;
+  background:linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+}
+
+.bot-identity{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  min-width:0;
+}
+
+.bot-avatar{
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.03);
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1rem;
+  font-weight:700;
+  color:#fff;
+  flex-shrink:0;
+  overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.03);
+}
+
+.bot-meta{
+  min-width:0;
+}
+
+.bot-role { display: none; }
+
+.bot-traits{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+
+.trait-chip{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(255,255,255,.03);
+  color:#c8d1e4;
+  font-size:.66rem;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  line-height:1;
+}
+
+.bot-intro{
+  padding:0 24px 10px;
+  font-size:.82rem;
+  color:#9ea8bd;
+  line-height:1.45;
+}
+
+.bot-name{
+  font-family:'Clash Display',sans-serif;
+  font-size:1.55rem;
+  line-height:.95;
+  max-width:240px;
+  letter-spacing:-.03em;
+}
+.bot-val{text-align:right}
+.bot-val-num{
+  font-family:'Clash Display',sans-serif;
+  font-size:2rem;
+  font-weight:600;
+  letter-spacing:-.04em;
+}
+.bot-val-pnl{
+  font-size:.88rem;
+  margin-top:4px;
+  color:var(--muted)!important;
+}
+.bot-strat:empty{
+  display:none;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.83rem;
+}
+th{
+  color:var(--faint);
+  text-align:left;
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  font-size:.68rem;
+}
+td{
+  padding:11px 14px;
+  border-bottom:1px solid rgba(255,255,255,.04);
+  color:#b8c0d4;
+}
+tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(255,255,255,.018)}
+.act-toggle{
+  font-size:.73rem;
+  color:var(--muted);
+  padding:14px 18px;
+  cursor:pointer;
+  border-top:1px solid rgba(255,255,255,.05);
+  user-select:none;
+  font-weight:700;
+  letter-spacing:.06em;
+}
+.act-toggle:hover{color:#fff}
+.act-log{
+  display:none;
+  padding:4px 18px 16px;
+  max-height:140px;
+  overflow-y:auto;
+  background:rgba(0,0,0,.16);
+}
+.act-log.open{display:block}
+.act-item{
+  font-size:.76rem;
+  padding:7px 0;
+  color:var(--muted);
+  border-bottom:1px solid rgba(255,255,255,.04);
+}
+
+.vs-mid{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+}
+.vs-ring{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  border:1px solid var(--line2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,255,255,.03);
+  backdrop-filter:blur(18px);
+  font-family:'Clash Display',sans-serif;
+  font-size:2.1rem;
+  color:#fff;
+  box-shadow:var(--shadow);
+}
+.mid-chip{
+  width:100%;
+  text-align:center;
+  padding:10px 10px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:var(--muted);
+  font-size:.74rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.winbar-wrap{
+  max-width:var(--content);
+  margin:14px auto 0;
+  padding:0 28px 8px;
+  position:relative;
+  z-index:2;
+}
+.winbar-labels{
+  display:flex;
+  justify-content:space-between;
+  font-size:.78rem;
+  margin-bottom:8px;
+  font-weight:700;
+}
+.winbar{
+  height:12px;
+  background:#10131a;
+  border-radius:999px;
+  overflow:hidden;
+  display:flex;
+  border:1px solid rgba(255,255,255,.04);
+}
+.winbar-a{
+  height:100%;
+  background:linear-gradient(90deg, var(--green), #67f2b3);
+  transition:width .6s;
+  box-shadow:0 0 20px rgba(39,224,138,.4);
+}
+.winbar-b{
+  height:100%;
+  background:linear-gradient(90deg, #ff7b7b, var(--red));
+  flex:1;
+}
+
+
+.src-badge{
+  max-width:var(--content);
+  margin:8px auto 0;
+  padding:0 28px;
+  text-align:center;
+  font-size:.78rem;
+  color:var(--faint);
+}
+
+.betting{
+  max-width:var(--content);
+  margin:22px auto 0;
+  padding:0 28px;
+}
+.betting-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:1.3rem;
+  color:#fff;
+  letter-spacing:-.02em;
+  margin-bottom:8px;
+}
+.bet-note{
+  font-size:.84rem;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+.bet-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.bet-box{
+  border:1px solid var(--line2);
+  border-radius:24px;
+  padding:20px;
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  backdrop-filter:blur(20px);
+}
+.bet-label{
+  font-size:1rem;
+  font-weight:700;
+  letter-spacing:.02em;
+  margin-bottom:4px;
+}
+.bet-sub{
+  font-size:.8rem;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+.bet-row{display:flex;gap:10px}
+.bet-input{
+  flex:1;
+  background:#0f131a;
+  border:1px solid rgba(255,255,255,.08);
+  color:#fff;
+  padding:14px 14px;
+  font-family:inherit;
+  font-size:.98rem;
+  border-radius:14px;
+  outline:none;
+}
+.bet-input:focus{border-color:rgba(139,92,246,.5)}
+.bet-btn{
+  padding:14px 18px;
+  font-family:inherit;
+  font-size:.88rem;
+  font-weight:700;
+  cursor:pointer;
+  border:none;
+  border-radius:14px;
+  letter-spacing:.06em;
+  transition:.2s ease;
+  white-space:nowrap;
+}
+.bet-btn:disabled{opacity:.45;cursor:default}
+.btn-g{background:linear-gradient(180deg, #39f0a0, #1fca77);color:#04110a}
+.btn-r{background:linear-gradient(180deg, #ff7777, #e04646);color:#fff}
+.btn-g:hover,.btn-r:hover{transform:translateY(-1px)}
+
+.history{
+  max-width:var(--content);
+  margin:22px auto 0;
+  padding:0 28px 28px;
+}
+.history-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:1.2rem;
+  color:#fff;
+  letter-spacing:-.02em;
+  margin-bottom:12px;
+}
+#histList{
+  border:1px solid var(--line2);
+  border-radius:24px;
+  padding:8px 18px;
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  backdrop-filter:blur(20px);
+}
+.h-item{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  font-size:.84rem;
+  padding:12px 2px;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  flex-wrap:wrap;
+  color:#aeb6c8;
+}
+.h-item:last-child{border-bottom:none}
+.h-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+.footer{
+  max-width:var(--content);
+  margin:0 auto;
+  padding:8px 28px 30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+.s-link{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:var(--muted);
+  text-decoration:none;
+  font-size:.8rem;
+  letter-spacing:.03em;
+  transition:color .2s;
+}
+.s-link:hover{color:#fff}
+.s-link svg{width:14px;height:14px;fill:currentColor}
+
+.overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.74);
+  z-index:100;
+  align-items:center;
+  justify-content:center
+}
+.overlay.show{display:flex}
+.overlay-box{
+  width:min(560px,92vw);
+  background:linear-gradient(180deg, #151925, #0f1218);
+  border:1px solid var(--line2);
+  border-radius:28px;
+  padding:34px 34px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
+.ov-trophy{font-size:3.2rem}
+.ov-label{
+  font-size:.78rem;
+  color:var(--faint);
+  letter-spacing:.2em;
+  margin:10px 0 8px;
+}
+.ov-name{
+  font-family:'Clash Display',sans-serif;
+  font-size:2.4rem;
+  font-weight:600;
+  letter-spacing:-.03em;
+}
+.ov-score{font-size:1rem;color:var(--muted);margin-top:8px}
+.ov-pnl{font-size:1rem;margin-top:5px}
+.ov-skip{
+  margin-top:18px;
+  font-size:.8rem;
+  color:var(--muted);
+  cursor:pointer;
+  letter-spacing:.08em;
+}
+.ov-skip:hover{color:#fff}
+
+canvas#fw{position:fixed;inset:0;pointer-events:none;z-index:99}
+.lev{
+  display:inline-block;
+  background:#ff8a001c;
+  color:#ffb157;
+  font-size:.62rem;
+  padding:2px 6px;
+  border-radius:999px;
+  margin-right:5px;
+  vertical-align:middle;
+}
+
+.wallet-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(39,224,138,.07);
+  border: 1px solid rgba(39,224,138,.25);
+  border-radius: 999px;
+  padding: 8px 6px 8px 14px;
+  white-space: nowrap;
+}
+
+.wallet-pill{display:flex;align-items:center;gap:8px;background:rgba(39,224,138,.07);border:1px solid rgba(39,224,138,.25);border-radius:999px;padding:8px 6px 8px 14px;white-space:nowrap}
+.wp-label{font-size:.65rem;color:rgba(39,224,138,.55);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.wp-amount{font-size:.82rem;font-weight:700;color:#27e08a}
+.wp-faucet{background:rgba(39,224,138,.18);border:1px solid rgba(39,224,138,.35);color:#27e08a;padding:5px 10px;font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;letter-spacing:.06em;border-radius:999px;transition:.2s}
+.wp-faucet:hover{background:rgba(39,224,138,.3)}
+.wp-faucet:disabled{opacity:.5;cursor:default}
+.faucet-btn-solo{background:rgba(39,224,138,.08);border:1px solid rgba(39,224,138,.28);color:#27e08a;padding:10px 16px;font-family:inherit;font-size:.78rem;font-weight:700;cursor:pointer;letter-spacing:.07em;border-radius:14px;transition:.2s;white-space:nowrap}
+.faucet-btn-solo:hover{background:rgba(39,224,138,.16);transform:translateY(-1px)}
+.timer-wrap{text-align:right;min-width:90px}
+.timer-lbl{font-size:.7rem;color:var(--faint);text-transform:uppercase;letter-spacing:.12em;white-space:nowrap}
+.claim-btn{width:100%;margin-top:12px;padding:14px;background:linear-gradient(180deg,#ffd700,#e6a800);color:#1a1000;font-family:inherit;font-size:.92rem;font-weight:700;border:none;border-radius:14px;cursor:pointer;letter-spacing:.08em;transition:.2s;display:none}
+.claim-btn:hover{transform:translateY(-1px);filter:brightness(1.1)}
+.claim-btn:disabled{opacity:.5;cursor:default}
+
+@media(max-width:1100px){
+  .arena{grid-template-columns:1fr;gap:18px}
+  .vs-mid{flex-direction:row}
+  .topbar{grid-template-columns:1fr}
+}
+@media(max-width:720px){
+  .header{padding:22px 16px 12px;flex-direction:column;align-items:flex-start}
+  .topbar,.scoreboard,.arena,.betting,.history,.winbar-wrap,.src-badge,.footer{padding-left:16px;padding-right:16px}
+  .topbar-right{flex-wrap:wrap}
+  .bet-grid{grid-template-columns:1fr}
+  .bot-head{padding:18px 18px 14px}
+  .bot-strat{padding:0 18px 14px}
+  .bot-name{font-size:1.2rem}
+  .bot-val-num{font-size:1.5rem}
+  table{font-size:.74rem}
+  th,td{padding:9px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand-block">
+    <h1>AI PREDICTION <span>DEATHMATCH</span></h1>
+   <div class="brand-sub">Two AI agents enter. One strategy survives.</div>
+  </div>
+  <div class="header-right">
+  <div class="head-pill">Live round</div>
+  <div class="wallet-pill" id="walletPill" style="display:none">
+    <span class="wp-label">BAL</span>
+    <span class="wp-amount"><span id="usdaiBalNum">0.00</span> USDai</span>
+    <button class="wp-faucet" id="faucetBtn" onclick="claimFaucet()">+100</button>
+  </div>
+  <button class="faucet-btn-solo" id="faucetBtnSolo" onclick="claimFaucet()">GET 100 USDai</button>
+  <button class="connect-btn" id="connectBtn" onclick="connectWallet()">CONNECT</button>
+</div>
+</div>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div>Session 1</div>
+    <div id="roundLabel">ROUND #--</div>
+  </div>
+  <div class="topbar-center" id="matchupLabel">LOADING...</div>
+  <div class="topbar-right">
+  <div class="timer-wrap">
+    <div class="timer-lbl">Time left</div>
+    <div class="timer" id="timer">--:--</div>
+  </div>
+</div>
+</div>
+
+<div class="fight-card">
+  <div class="fight-card-top">
+    <div class="fight-side left">
+      <div class="fight-side-label">LEFT CORNER</div>
+      <div class="fight-side-name" id="fcName1">AI-1</div>
+      <div class="fight-side-role" id="fcRole1">ARCHETYPE</div>
+    </div>
+
+    <div class="fight-center">
+      <div class="fight-kicker">MAIN EVENT</div>
+      <div class="fight-vs">VS</div>
+      <div class="fight-round" id="fcRound">ROUND #--</div>
+    </div>
+
+    <div class="fight-side right">
+      <div class="fight-side-label">RIGHT CORNER</div>
+      <div class="fight-side-name" id="fcName2">AI-2</div>
+      <div class="fight-side-role" id="fcRole2">ARCHETYPE</div>
+    </div>
+  </div>
+
+  <div class="fight-card-bottom">
+    <div class="fight-tagline" id="fcTagline">SYSTEMATIC PRESSURE VS PURE CHAOS</div>
+    <div class="fight-subline" id="fcSubline">Live bot duel on active prediction markets</div>
+  </div>
+</div>
+
+<div class="arena">
+ <div class="bot-card c1">
+  <div class="bot-head">
+    <div class="bot-identity">
+      <div class="bot-avatar" id="avatar1"></div>
+      <div class="bot-meta">
+        <div class="bot-name" id="name1" style="color:var(--green)">AI-1</div>
+        
+        <div class="bot-traits" id="traits1"></div>
+      </div>
+    </div>
+    <div class="bot-val">
+      <div class="bot-val-num" id="val1" style="color:var(--green)">$1000.00</div>
+      <div class="bot-val-pnl" id="pnl1">+$0.00</div>
+    </div>
+  </div>
+  <div class="bot-intro" id="intro1">Loading profile...</div>
+  <div class="bot-strat" id="strat1">Loading strategy...</div>
+    <table>
+      <thead><tr><th>Market</th><th>Opt</th><th>Entry</th><th>Now</th><th>Alloc</th><th>PnL</th></tr></thead>
+      <tbody id="pos1"></tbody>
+    </table>
+    <div class="act-toggle" onclick="toggleAct('actlog1','acttxt1')">▶ <span id="acttxt1">SHOW ACTIVITY</span></div>
+    <div class="act-log" id="actlog1"></div>
+  </div>
+
+  <div class="vs-mid">
+    <div class="vs-ring">VS</div>
+    <div class="mid-chip" id="srcBadge">⚪ SIMULATED DATA</div>
+  </div>
+
+ <div class="bot-card c2">
+  <div class="bot-head">
+    <div class="bot-identity">
+      <div class="bot-avatar" id="avatar2"></div>
+      <div class="bot-meta">
+        <div class="bot-name" id="name2" style="color:var(--red)">AI-2</div>
+        <div class="bot-role" id="role2">ARCHETYPE</div>
+        <div class="bot-traits" id="traits2"></div>
+      </div>
+    </div>
+    <div class="bot-val">
+      <div class="bot-val-num" id="val2" style="color:var(--red)">$1000.00</div>
+      <div class="bot-val-pnl" id="pnl2">+$0.00</div>
+    </div>
+  </div>
+  <div class="bot-intro" id="intro2">Loading profile...</div>
+  <div class="bot-strat" id="strat2">Loading strategy...</div>
+    <table>
+      <thead><tr><th>Market</th><th>Opt</th><th>Entry</th><th>Now</th><th>Alloc</th><th>PnL</th></tr></thead>
+      <tbody id="pos2"></tbody>
+    </table>
+    <div class="act-toggle" onclick="toggleAct('actlog2','acttxt2')">▶ <span id="acttxt2">SHOW ACTIVITY</span></div>
+    <div class="act-log" id="actlog2"></div>
+  </div>
+</div>
+
+<div class="winbar-wrap">
+  <div class="winbar-labels">
+    <span id="wlabel1" style="color:var(--green)">AI-1 50%</span>
+    <span id="wlabel2" style="color:var(--red)">50% AI-2</span>
+  </div>
+  <div class="winbar">
+    <div class="winbar-a" id="wbar1" style="width:50%"></div>
+    <div class="winbar-b"></div>
+  </div>
+</div>
+
+<div id="claimBanner" style="display:none;max-width:var(--content);margin:12px auto 0;padding:0 28px">
+  <div id="claimBannerInner" style="background:linear-gradient(135deg,rgba(243,201,105,.12),rgba(243,201,105,.06));border:1px solid rgba(243,201,105,.35);border-radius:20px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:16px">
+    <div>
+      <div style="color:#f3c969;font-weight:700;font-size:.95rem">🏆 You have unclaimed winnings!</div>
+      <div id="claimBannerSub" style="color:#a89060;font-size:.8rem;margin-top:3px"></div>
+    </div>
+    <button id="claimBannerBtn" style="background:linear-gradient(180deg,#ffd700,#e6a800);color:#1a1000;border:none;border-radius:12px;padding:12px 20px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">CLAIM NOW</button>
+  </div>
+</div>
+
+<div class="betting">
+  <div class="betting-title">Place Your Bet</div>
+  <div class="bet-note">Connect wallet to back your side before the round closes</div>
+  <div class="bet-grid">
+
+    <div class="bet-box">
+      <div class="bet-label" id="betlabel1" style="color:var(--green)">BET ON AI-1</div>
+      <div class="bet-sub" id="betsub1">SUPPORT AI-1</div>
+      <div class="bet-row">
+        <input class="bet-input" id="betamt1" type="number" placeholder="USDai amount" min="1" step="any">
+        <button class="bet-btn btn-g" id="betbtn1" onclick="placeBet('ai1')">BET</button>
+      </div>
+      <button class="claim-btn" id="claimbtn1" onclick="claimWinnings()">🏆 CLAIM WINNINGS</button>
+    </div>
+
+    <div class="bet-box">
+      <div class="bet-label" id="betlabel2" style="color:var(--red)">BET ON AI-2</div>
+      <div class="bet-sub" id="betsub2">SUPPORT AI-2</div>
+      <div class="bet-row">
+        <input class="bet-input" id="betamt2" type="number" placeholder="USDai amount" min="1" step="any">
+        <button class="bet-btn btn-r" id="betbtn2" onclick="placeBet('ai2')">BET</button>
+      </div>
+      <button class="claim-btn" id="claimbtn2" onclick="claimWinnings()">🏆 CLAIM WINNINGS</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="history">
+  <div class="history-title">Recent Rounds</div>
+  <div id="histList"><div style="color:#5f6679;font-size:.9rem">No history yet</div></div>
+</div>
+
+<div class="footer">
+  <a class="s-link" href="https://x.com/0xWeedpack" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.748l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    Twittuh
+  </a>
+  <span style="color:#2c3240">•</span>
+  <a class="s-link" href="https://t.me/JonnyPerkins2003" target="_blank" rel="noopener noreferrer">
+    <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+    Telegram
+  </a>
+ <span style="color:#5f6679;font-size:.78rem">live autonomous arena</span>
+</div>
+
+<canvas id="fw"></canvas>
+<div class="overlay" id="overlay">
+  <div class="overlay-box">
+    <div class="ov-trophy">🏆</div>
+    <div class="ov-label">ROUND WINNER</div>
+    <div class="ov-name" id="ovName">—</div>
+    <div class="ov-score" id="ovScore"></div>
+    <div class="ov-pnl" id="ovPnl"></div>
+    <div class="ov-skip" onclick="closeOverlay()">[ NEXT ROUND STARTING... ]</div>
+  </div>
+</div>
+
+<script>
+var walletAddr  = null;
+var curRound    = null;
+var fwAnim      = null;
+var timerIval   = null;
+var prevRoundId = null;
+var _shownWinners = {};
+
+var CONTRACTADDR = '0xF02bA3A90115C5CdFeFb9604479999396B3F1CF4';
+var BATTLEABI = [
+  'function placeBet(uint256 roundId, uint8 side, uint256 amount) external',
+  'function getRound(uint256 roundId) view returns (bool open, bool settled, uint8 winner, uint256 totalSide1, uint256 totalSide2, uint256 totalPool, uint256 feeAmount, string label)',
+  'function getUserBet(uint256 roundId, address user) view returns (uint8 side, uint256 amount, bool claimed)',
+  'function claim(uint256 roundId) external',
+  'function nextRoundId() view returns (uint256)'
+];
+
+var USDAI_ADDR = '0x6127ea36Dc821044635Bec25AE384Ab92E059f69';
+var USDAI_ABI = [
+  'function balanceOf(address) view returns (uint256)',
+  'function decimals() view returns (uint8)',
+  'function allowance(address owner, address spender) view returns (uint256)',
+  'function approve(address spender, uint256 amount) returns (bool)',
+  'function transfer(address to, uint256 amount) returns (bool)'
+];
+
+var LITVM_CHAIN = {
+  chainId: '0x1159',
+  chainName: 'LitVM LiteForge',
+  nativeCurrency: { name: 'zkLTC', symbol: 'zkLTC', decimals: 18 },
+  rpcUrls: ['https://liteforge.rpc.caldera.xyz/http'],
+  blockExplorerUrls: ['https://liteforge.explorer.caldera.xyz']
+};
+
+function setText(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function setStyle(id, prop, val) {
+  var el = document.getElementById(id);
+  if (el) el.style[prop] = val;
+}
+
+function fetchState() {
+  fetch('/api/state')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d) return;
+      if (d.history) renderHistory(d.history);
+      if (!d.round) {
+        setText('matchupLabel', 'NEXT ROUND STARTING SOON...');
+        setText('timer', '--:--');
+        setText('roundLabel', 'ROUND #--');
+        setText('fcName1', 'AI-1');
+        setText('fcName2', 'AI-2');
+        setText('fcRole1', '');
+        setText('fcRole2', '');
+        setText('fcRound', 'ROUND #--');
+        setText('fcTagline', 'NEXT MATCHUP LOADING');
+        setText('fcSubline', 'Live bot duel on active prediction markets');
+        return;
+      }
+      if (prevRoundId && d.round.id !== prevRoundId) {
+        closeOverlay();
+        ['pos1','pos2'].forEach(function(id){
+          var el = document.getElementById(id);
+          if (el) el.innerHTML = '<tr><td colspan="6" style="color:#222;text-align:center;padding:10px">Loading...</td></tr>';
+        });
+        ['actlog1','actlog2'].forEach(function(id){
+          var el = document.getElementById(id);
+          if (el) el.innerHTML = '<div class="act-item" style="color:#333">New round starting...</div>';
+        });
+        ['strat1','strat2'].forEach(function(id){
+          var el = document.getElementById(id);
+          if (el) el.textContent = '"Loading strategy..."';
+        });
+        ['betbtn1','betbtn2'].forEach(function(id){
+          var b = document.getElementById(id);
+          if (b) { b.disabled = false; b.textContent = 'BET'; }
+        });
+      }
+      prevRoundId = d.round.id;
+      curRound    = d.round;
+      renderAll(d);
+    })
+    .catch(function(e){ console.error('fetch error:', e); });
+}
+
+function renderAll(d) {
+  var r = d.round;
+  var h = d.history || [];
+  var meta1 = getBotMeta(r.ai1 ? r.ai1.name : '');
+  var meta2 = getBotMeta(r.ai2 ? r.ai2.name : '');
+
+  setText('roundLabel', 'ROUND #' + (r.round_num || '--'));
+  setText('matchupLabel', getTopSummary(r));
+  setText('timer', (function(secs){
+    secs = Math.max(0, secs || 0);
+    var m = Math.floor(secs / 60);
+    var s = secs % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  })(r.time_left || 0));
+
+  setText('fcName1', r.ai1 ? cleanBotName(r.ai1.name) : 'AI-1');
+  setText('fcName2', r.ai2 ? cleanBotName(r.ai2.name) : 'AI-2');
+  setText('fcRole1', meta1.archetype);
+  setText('fcRole2', meta2.archetype);
+  setText('fcRound', 'ROUND ' + (r.round_num || '--'));
+  setText('fcTagline', getFightTagline(r.ai1 ? r.ai1.name : '', r.ai2 ? r.ai2.name : ''));
+  setText('fcSubline', r.leading === 'ai1' ?
+    cleanBotName(r.ai1 ? r.ai1.name : 'AI-1') + ' currently leading the board' :
+    cleanBotName(r.ai2 ? r.ai2.name : 'AI-2') + ' currently leading the board');
+
+  var sb = document.getElementById('srcBadge');
+  if (sb) {
+    if (r.data_source === 'polymarket') {
+      sb.textContent = '\u{1F7E2} POLYMARKET LIVE \u2014 ' + (r.markets_count || 0) + ' MARKETS';
+      sb.style.color = '#86efac';
+      sb.style.borderColor = 'rgba(34,197,94,.25)';
+      sb.style.background = 'rgba(34,197,94,.08)';
+    } else {
+      sb.textContent = '\u25CF LIVE ROUND';
+      sb.style.color = '#9aa3b7';
+      sb.style.borderColor = 'rgba(255,255,255,.08)';
+      sb.style.background = 'rgba(255,255,255,.03)';
+    }
+  }
+
+  renderBot('1', r.ai1, '#27e08a');
+  renderBot('2', r.ai2, '#3ba7ff');
+
+  var v1 = (r.ai1 && r.ai1.portfolioValue) ? r.ai1.portfolioValue : 1000;
+  var v2 = (r.ai2 && r.ai2.portfolioValue) ? r.ai2.portfolioValue : 1000;
+  var tot = v1 + v2;
+  var pct1 = tot > 0 ? ((v1 / tot) * 100).toFixed(1) : '50.0';
+  var pct2 = (100 - parseFloat(pct1)).toFixed(1);
+
+  setStyle('wbar1', 'width', pct1 + '%');
+  setText('wlabel1', cleanBotName(r.ai1 ? r.ai1.name : 'AI-1').split(' ')[0] + ' ' + pct1 + '%');
+  setText('wlabel2', pct2 + '% ' + cleanBotName(r.ai2 ? r.ai2.name : 'AI-2').split(' ')[0]);
+
+  if (r.ai1) setText('betlabel1', 'BET ON ' + cleanBotName(r.ai1.name));
+  if (r.ai2) setText('betlabel2', 'BET ON ' + cleanBotName(r.ai2.name));
+
+  renderHistory(h);
+  if (r.bettingRoundId) fetchPoolStats(r.bettingRoundId);
+}
+
+function getBotMeta(name) {
+  var n = (name || '').toUpperCase();
+  if (n.includes('NARRATIVE')) return { archetype:'NARRATIVE', traits:['TREND','SENTIMENT','ROTATION'], intro:'Chases the hottest market story before it cools.' };
+  if (n.includes('CONTRARIAN')) return { archetype:'CONTRARIAN', traits:['FADE CROWD','SHARP','MEAN REV'], intro:'Attacks crowded positions and bets on the snapback.' };
+  if (n.includes('MOMENTUM')) return { archetype:'MOMENTUM', traits:['TREND','AGGRO','FAST'], intro:'Rides strength hard and cuts hesitation.' };
+  if (n.includes('DEGEN')) return { archetype:'DEGEN', traits:['LONGSHOT','VOLATILITY','HIGH RISK'], intro:'Lives on asymmetry, chaos, and moonshots.' };
+  if (n.includes('REVERSAL')) return { archetype:'REVERSAL', traits:['EXTREMES','SNAPBACK','TACTICAL'], intro:'Waits for stretched prices and bets the other way.' };
+  if (n.includes('QUANT')) return { archetype:'QUANT', traits:['SYSTEMATIC','BALANCED','DIVERSIFIED'], intro:'Spreads risk and hunts efficient edges.' };
+  return { archetype:'GENERALIST', traits:['ADAPTIVE','MIXED','LIVE'], intro:'Reads the board and adapts on the fly.' };
+}
+
+function getFightTagline(name1, name2) {
+  var a = getBotMeta(name1 || '').archetype;
+  var b = getBotMeta(name2 || '').archetype;
+  return a + ' VS ' + b;
+}
+
+function getTopSummary(r) {
+  if (!r || !r.ai1 || !r.ai2) return 'LIVE HEAD-TO-HEAD';
+  var v1 = r.ai1.portfolioValue || 1000;
+  var v2 = r.ai2.portfolioValue || 1000;
+  var total = v1 + v2;
+  var gap = Math.abs(v1 - v2);
+  return 'TOTAL $' + total.toFixed(0) + ' · GAP $' + gap.toFixed(0);
+}
+
+function cleanBotName(name) {
+  return (name || '')
+    .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function getBotAvatar(name) {
+  var n = (name || '').toUpperCase();
+  if (n.includes('QUANT')) return './assets/quant-machine.png';
+  if (n.includes('REVERSAL')) return './assets/reversal-hunter.png';
+  if (n.includes('DEGEN')) return './assets/degen-ape.png';
+  if (n.includes('MOMENTUM')) return './assets/momentum-rider.png';
+  if (n.includes('CONTRARIAN')) return './assets/contrarian-shark.png';
+  if (n.includes('NARRATIVE')) return './assets/narrative-chaser.png';
+  return '';
+}
+
+function getBotRecord(name, history) {
+  var clean = cleanBotName(name || '');
+  var wins = 0, losses = 0;
+  (history || []).forEach(function(h) {
+    var n1 = cleanBotName(h.ai1_name || '');
+    var n2 = cleanBotName(h.ai2_name || '');
+    if (n1 !== clean && n2 !== clean) return;
+    var won = (n1 === clean && h.winner === 1) || (n2 === clean && h.winner === 2);
+    if (won) wins++; else losses++;
+  });
+  return wins + '-' + losses;
+}
+
+function renderBot(num, ai, defColor) {
+  if (!ai) return;
+  var color    = ai.color || defColor;
+  var nameEl   = document.getElementById('name'   + num);
+  var valEl    = document.getElementById('val'    + num);
+  var pnlEl    = document.getElementById('pnl'    + num);
+  var stratEl  = document.getElementById('strat'  + num);
+  var introEl  = document.getElementById('intro'  + num);
+  var roleEl   = document.getElementById('role'   + num);
+  var traitsEl = document.getElementById('traits' + num);
+  var avatarEl = document.getElementById('avatar' + num);
+  var tbody    = document.getElementById('pos'    + num);
+  var actEl    = document.getElementById('actlog' + num);
+  var cleanName = cleanBotName(ai.name || ('AI-' + num));
+  var avatarSrc = getBotAvatar(ai.name || '');
+  var meta = getBotMeta(ai.name || '');
+  var liveVal = (typeof ai.portfolioValue === 'number' && !isNaN(ai.portfolioValue))
+    ? ai.portfolioValue
+    : (1000 + (ai.totalPnL || 0));
+
+  if (nameEl) { nameEl.textContent = cleanName; nameEl.style.color = color; }
+  if (valEl)  { valEl.textContent = '$' + liveVal.toFixed(2); valEl.style.color = color; }
+
+  if (avatarEl) {
+    avatarEl.style.color = color;
+    avatarEl.style.borderColor = color + '55';
+    avatarEl.style.boxShadow = '0 0 0 4px ' + color + '12';
+    if (avatarSrc) {
+      avatarEl.textContent = '';
+      avatarEl.style.backgroundImage = 'url("' + avatarSrc + '")';
+    } else {
+      avatarEl.style.backgroundImage = 'none';
+      avatarEl.textContent = cleanName.charAt(0);
+    }
+  }
+
+  if (roleEl) roleEl.textContent = meta.archetype;
+  if (introEl) {
+    var posCount = (ai.positions || []).filter(function(p){ return !p.closed; }).length;
+    introEl.textContent = posCount + ' active · ' + ((ai.activity || []).length) + ' moves';
+  }
+  if (traitsEl) {
+    traitsEl.innerHTML = meta.traits.map(function(t) {
+      return '<span class="trait-chip">' + t + '</span>';
+    }).join('');
+  }
+  if (pnlEl) {
+    var pnl = ai.totalPnL || 0;
+    pnlEl.textContent = (pnl >= 0 ? '+' : '') + '$' + pnl.toFixed(2);
+    pnlEl.style.color = pnl >= 0 ? '#00ff88' : '#ff4444';
+  }
+  if (stratEl) stratEl.textContent = '';
+
+  if (tbody) {
+    var positions = ai.positions || [];
+    if (!positions.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="color:#222;text-align:center;padding:10px">No positions</td></tr>';
+    } else {
+      tbody.innerHTML = positions.map(function(p) {
+        var pnlVal   = p.pnl || 0;
+        var pnlColor = pnlVal >= 0 ? '#00ff88' : '#ff4444';
+        var pnlStr   = (pnlVal >= 0 ? '+' : '') + '$' + Math.abs(pnlVal).toFixed(2);
+        var title    = p.marketTitle || '?';
+        var shortT   = title.length > 28 ? title.slice(0,26)+'..' : title;
+        var entry    = Math.round((p.entryPrice   || 0) * 100);
+        var now      = Math.round((p.currentPrice || 0) * 100);
+        if (p.closed) {
+          return '<tr style="opacity:0.35">' +
+            '<td style="color:#444" title="'+title+'">'+shortT+'</td>' +
+            '<td style="color:#555"><s>'+(p.optionName||'?')+'</s></td>' +
+            '<td style="color:#333">'+entry+'¢</td>' +
+            '<td style="color:#ff8844">'+Math.round((p.closedPrice||0)*100)+'¢ ✕</td>' +
+            '<td style="color:#333">$'+(p.allocation||0)+'</td>' +
+            '<td style="color:'+pnlColor+'">'+pnlStr+'</td>' +
+            '</tr>';
+        }
+        var changed  = now !== entry ? 'color:#99bbff' : 'color:#555';
+        var levBadge = (p.leverage && p.leverage > 1) ? '<span class="lev">'+p.leverage+'x</span>' : '';
+        return '<tr>' +
+          '<td style="color:#666" title="'+title+'">'+shortT+'</td>' +
+          '<td style="color:#ccc">'+levBadge+(p.optionName||'?')+'</td>' +
+          '<td style="color:#444">'+entry+'¢</td>' +
+          '<td style="'+changed+'">'+now+'¢</td>' +
+          '<td style="color:#666">$'+(p.allocation||0)+'</td>' +
+          '<td style="color:'+pnlColor+'">'+pnlStr+'</td>' +
+          '</tr>';
+      }).join('');
+    }
+  }
+
+  if (actEl) {
+    var acts = ai.activity || [];
+    if (!acts.length) {
+      actEl.innerHTML = '<div class="act-item" style="color:#333">No activity yet this round</div>';
+    } else {
+      actEl.innerHTML = acts.slice(-10).reverse().map(function(a) {
+        var isSell = a.type === 'sell' || a.text.toUpperCase().includes('SOLD');
+        var isBuy  = a.type === 'buy'  || a.text.toUpperCase().includes('BOUGHT') || a.text.toUpperCase().includes('ADDED');
+        var col = isSell ? '#ff4444' : isBuy ? '#00aa44' : '#888';
+        var t = a.time ? new Date(a.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second: '2-digit'}) : 'just now';
+        return '<div class="act-item" style="color:'+col+'">'+t+' '+a.text+'</div>';
+      }).join('');
+    }
+  }
+}
+
+function renderHistory(history) {
+  var el = document.getElementById('histList');
+  if (!el) return;
+  if (!history || !history.length) {
+    el.innerHTML = '<div style="color:#222;font-size:.65rem">No history yet</div>';
+    return;
+  }
+  var seen = {};
+  var unique = history.filter(function(h) {
+    var key = h.round_num + '_' + h.settled_at;
+    if (seen[key]) return false;
+    seen[key] = true;
+    return true;
+  });
+  el.innerHTML = unique.slice(0, 10).map(function(h) {
+    var winner = h.winner === 1 ? h.ai1_name : h.ai2_name;
+    var dot    = h.source === 'polymarket' ? '#22c55e' : '#333';
+    var time   = h.settled_at ? new Date(h.settled_at).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+    var v1col  = h.winner === 1 ? '#00ff88' : '#555';
+    var v2col  = h.winner === 2 ? '#00ff88' : '#555';
+    var v1     = typeof h.ai1_value === 'number' ? h.ai1_value.toFixed(0) : h.ai1_value;
+    var v2     = typeof h.ai2_value === 'number' ? h.ai2_value.toFixed(0) : h.ai2_value;
+    return '<div class="h-item">' +
+      '<div class="h-dot" style="background:'+dot+'"></div>' +
+      '<span style="color:#333">#'+h.round_num+'</span>' +
+      '<span style="color:#222">'+time+'</span>' +
+      '<span>'+h.ai1_name+' <span style="color:'+v1col+'">$'+v1+'</span>' +
+      ' vs '+h.ai2_name+' <span style="color:'+v2col+'">$'+v2+'</span></span>' +
+      '<span style="color:#c0a000">🏆 '+winner+'</span>' +
+      '</div>';
+  }).join('');
+}
+
+function tickTimer() {
+  if (!curRound || !curRound.ends_at) return;
+  var left = Math.max(0, Math.floor((new Date(curRound.ends_at) - Date.now()) / 1000));
+  var m = Math.floor(left / 60), s = left % 60;
+  setText('timer', (m<10?'0':'')+m+':'+(s<10?'0':'')+s);
+  if (left <= 15) {
+    ['betbtn1','betbtn2'].forEach(function(id){
+      var b = document.getElementById(id);
+      if (b && !b.disabled) { b.disabled = true; b.textContent = 'CLOSED'; }
+    });
+  }
+  if (left === 0 && curRound) {
+    var key = 'winner_' + curRound.id;
+    if (!_shownWinners[key]) {
+      _shownWinners[key] = true;
+      showWinner(curRound);
+      setTimeout(function(){ closeOverlay(); }, 7000);
+    }
+  }
+}
+
+function showWinner(r) {
+  if (!r.ai1 || !r.ai2) return;
+  var v1 = r.ai1.portfolioValue || 1000;
+  var v2 = r.ai2.portfolioValue || 1000;
+  var w  = v1 >= v2 ? r.ai1 : r.ai2;
+  var lv = v1 >= v2 ? v2 : v1;
+  var wv = v1 >= v2 ? v1 : v2;
+  var pnl = w.totalPnL || 0;
+  setText('ovName',  w.name);
+  setText('ovScore', '$'+wv.toFixed(2)+' vs $'+lv.toFixed(2));
+  var ovPnlEl = document.getElementById('ovPnl');
+  if (ovPnlEl) {
+    ovPnlEl.textContent = 'PnL: ' + (pnl>=0?'+':'') + '$' + pnl.toFixed(2);
+    ovPnlEl.style.color = pnl >= 0 ? '#00ff88' : '#ff4444';
+  }
+  var nameEl = document.getElementById('ovName');
+  if (nameEl) nameEl.style.color = w.color || '#ffd700';
+  document.getElementById('overlay').classList.add('show');
+  startFW(w.color || '#ffd700');
+}
+
+function closeOverlay() {
+  document.getElementById('overlay').classList.remove('show');
+  stopFW();
+}
+
+function toggleAct(logId, txtId) {
+  var el  = document.getElementById(logId);
+  var txt = document.getElementById(txtId);
+  if (!el) return;
+  var open = el.classList.toggle('open');
+  if (txt) txt.textContent = open ? 'HIDE ACTIVITY' : 'SHOW ACTIVITY';
+}
+
+function startFW(color) {
+  var cv = document.getElementById('fw');
+  var cx = cv.getContext('2d');
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  var pts = [];
+  for (var i=0; i<120; i++) {
+    pts.push({
+      x: cv.width*(0.2+Math.random()*0.6),
+      y: cv.height*(0.1+Math.random()*0.4),
+      vx: (Math.random()-.5)*7,
+      vy: (Math.random()-.5)*7 - 3,
+      life: 1, dec: 0.012 + Math.random()*.01,
+      sz: 2 + Math.random()*3,
+      col: [color,'#ffd700','#ffffff','#a855f7'][Math.floor(Math.random()*4)]
+    });
+  }
+  function draw() {
+    cx.clearRect(0, 0, cv.width, cv.height);
+    pts.forEach(function(p) {
+      p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.life -= p.dec;
+      cx.globalAlpha = Math.max(0, p.life);
+      cx.fillStyle = p.col;
+      cx.beginPath(); cx.arc(p.x, p.y, p.sz, 0, Math.PI*2); cx.fill();
+    });
+    cx.globalAlpha = 1;
+    pts = pts.filter(function(p){ return p.life > 0; });
+    if (pts.length > 0) fwAnim = requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function stopFW() {
+  if (fwAnim) cancelAnimationFrame(fwAnim);
+  var cv = document.getElementById('fw');
+  cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+}
+
+async function ensureLitVM() {
+  var LITVM_CHAIN_ID = '0x1159';
+  try {
+    var chainId = await window.ethereum.request({ method: 'eth_chainId' });
+    if (chainId !== LITVM_CHAIN_ID) {
+      try {
+        await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: LITVM_CHAIN_ID }] });
+      } catch(switchErr) {
+        if (switchErr.code === 4902) {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: LITVM_CHAIN_ID,
+              chainName: 'LiteForge Testnet',
+              nativeCurrency: { name: 'zkLTC', symbol: 'zkLTC', decimals: 18 },
+              rpcUrls: ['https://liteforge.rpc.caldera.xyz/http'],
+              blockExplorerUrls: ['https://liteforge.explorer.caldera.xyz']
+            }]
+          });
+        } else { throw switchErr; }
+      }
+    }
+  } catch(e) { console.log('ensureLitVM:', e.message); throw e; }
+}
+
+async function connectWallet() {
+  try {
+    if (!window.ethereum) { alert('Install MetaMask'); return; }
+    await ensureLitVM();
+    var acc = await window.ethereum.request({ method: 'eth_requestAccounts' });
+    if (!acc || !acc.length) return;
+    walletAddr = acc[0];
+var pill = document.getElementById('walletPill');
+var solo = document.getElementById('faucetBtnSolo');
+if (pill) pill.style.display = 'flex';
+if (solo) solo.style.display = 'none';
+fetchUsdaiBalance();
+setInterval(fetchUsdaiBalance, 15000);
+checkPendingClaims()
+    var btn = document.getElementById('connectBtn');
+    if (btn) btn.textContent = walletAddr.slice(0,6) + '...' + walletAddr.slice(-4);
+  } catch(e) { console.log('wallet:', e.message); }
+}
+
+// After walletAddr is set, scan last 10 rounds for unclaimed wins
+async function checkPendingClaims() {
+  try {
+    const { ethers } = await import('https://esm.sh/ethers@6.13.0');
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const contract = new ethers.Contract(CONTRACTADDR, BATTLEABI, provider);
+    const nextId = await contract.nextRoundId();
+    const start = Math.max(0, Number(nextId) - 10);
+    for (let i = start; i < Number(nextId); i++) {
+      const rd = await contract.getRound(i);
+      if (!rd.settled) continue;
+      const ub = await contract.getUserBet(i, walletAddr);
+      if (Number(ub.amount) > 0 && !ub.claimed && Number(ub.side) === Number(rd.winner)) {
+        // Show a persistent claim banner
+        showClaimBanner(i, ethers.formatEther(ub.amount));
+      }
+    }
+  } catch(e) { console.log('claim check:', e); }
+}
+
+function showClaimBanner(roundId, amount) {
+  var banner = document.getElementById('claimBanner');
+  var sub    = document.getElementById('claimBannerSub');
+  var btn    = document.getElementById('claimBannerBtn');
+  if (!banner) return;
+  if (sub) sub.textContent = 'Round #' + roundId + ' · ' + parseFloat(amount).toFixed(2) + ' USDai bet · click to claim your winnings';
+  if (btn) btn.onclick = function() { claimWinnings(roundId); };
+  banner.style.display = 'block';
+}
+
+async function fetchUsdaiBalance() {
+  if (!walletAddr) return;
+  try {
+    var { ethers } = await import('https://esm.sh/ethers@6.13.0');
+    var provider = new ethers.BrowserProvider(window.ethereum);
+    var token = new ethers.Contract(USDAI_ADDR, USDAI_ABI, provider);
+    var raw = await token.balanceOf(walletAddr);
+    var bal = parseFloat(ethers.formatUnits(raw, 18)).toFixed(2);
+    var num  = document.getElementById('usdaiBalNum');
+    var pill = document.getElementById('usdaiBalance');
+    if (num)  num.textContent = bal;
+    if (pill) pill.style.display = '';
+  } catch(e) { console.log('bal:', e.message); }
+}
+
+async function claimFaucet() {
+  if (!walletAddr) { alert('Connect wallet first'); return; }
+  var btn = document.getElementById('faucetBtn');
+  btn.textContent = 'CLAIMING...';
+  btn.disabled = true;
+  try {
+    var res = await fetch('/api/faucet', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ address: walletAddr })
+    });
+    var data = await res.json();
+    if (data.ok) {
+      btn.textContent = '\u2713 100 USDai SENT';
+      setTimeout(function() { btn.textContent = 'GET 100 USDai'; btn.disabled = false; }, 4000);
+      setTimeout(fetchUsdaiBalance, 3000);
+    } else {
+      btn.textContent = data.error || 'FAILED';
+      setTimeout(function() { btn.textContent = 'GET 100 USDai'; btn.disabled = false; }, 3000);
+    }
+  } catch(e) {
+    btn.textContent = 'FAILED';
+    setTimeout(function() { btn.textContent = 'GET 100 USDai'; btn.disabled = false; }, 3000);
+  }
+}
+
+async function placeBet(side) {
+  if (!walletAddr) { alert('Connect wallet first'); return; }
+  if (!curRound || !curRound.bettingRoundId) {
+    alert('Waiting for next round \u2014 betting not open yet');
+    return;
+  }
+  var inputId = side === 'ai1' ? 'betamt1' : 'betamt2';
+  var btnId   = side === 'ai1' ? 'betbtn1' : 'betbtn2';
+  var rawAmt  = document.getElementById(inputId) ? document.getElementById(inputId).value : '0';
+  if (!rawAmt || parseFloat(rawAmt) <= 0) { alert('Enter amount'); return; }
+  var btn = document.getElementById(btnId);
+  try {
+    await ensureLitVM();
+    if (btn) { btn.disabled = true; btn.textContent = 'APPROVING...'; }
+    var { ethers } = await import('https://esm.sh/ethers@6.13.0');
+    var provider  = new ethers.BrowserProvider(window.ethereum);
+    var signer    = await provider.getSigner();
+    var amountWei = ethers.parseUnits(String(rawAmt), 18);
+
+    var token = new ethers.Contract(USDAI_ADDR, USDAI_ABI, signer);
+    var allowance = await token.allowance(walletAddr, CONTRACTADDR);
+    if (allowance < amountWei) {
+      var approveTx = await token.approve(CONTRACTADDR, ethers.MaxUint256);
+      await approveTx.wait();
+    }
+
+    if (btn) { btn.disabled = true; btn.textContent = 'PLACING BET...'; }
+    var contract = new ethers.Contract(CONTRACTADDR, BATTLEABI, signer);
+    var roundId  = Number(curRound.bettingRoundId);
+    var sideNum  = side === 'ai1' ? 1 : 2;
+
+    try {
+      var rd = await contract.getRound(roundId);
+      if (!rd.open) {
+        alert('Round not open for betting yet. Wait a moment.');
+        if (btn) { btn.disabled = false; btn.textContent = 'BET'; }
+        return;
+      }
+    } catch(e) { console.log('getRound check:', e.message); }
+
+    var tx = await contract.placeBet(roundId, sideNum, amountWei);
+    await tx.wait();
+
+    if (document.getElementById(inputId)) document.getElementById(inputId).value = '';
+    if (btn) { btn.textContent = '\u2713 BET PLACED'; }
+    setTimeout(function() { if (btn) { btn.disabled = false; btn.textContent = 'BET'; } }, 3000);
+    fetchPoolStats(roundId);
+    fetchUsdaiBalance();
+  } catch(e) {
+    console.log('bet error:', e.message);
+    if (btn) { btn.disabled = false; btn.textContent = 'BET'; }
+    alert(e.reason || e.shortMessage || e.message || 'Bet failed');
+  }
+}
+
+async function fetchPoolStats(roundId) {
+  if (!roundId && roundId !== 0) return;
+  try {
+    const { ethers } = await import('https://esm.sh/ethers@6.13.0');
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const contract = new ethers.Contract(CONTRACTADDR, BATTLEABI, provider);
+
+    const rd = await contract.getRound(roundId);
+    const total1 = parseFloat(ethers.formatEther(rd.totalSide1));
+    const total2 = parseFloat(ethers.formatEther(rd.totalSide2));
+    const pool   = parseFloat(ethers.formatEther(rd.totalPool));
+
+    // Update pool display under bet labels
+    var sub1 = document.getElementById('betsub1');
+    var sub2 = document.getElementById('betsub2');
+    if (sub1) sub1.textContent = total1.toFixed(2) + ' USDai in pool · ' + (total2 > 0 ? (pool / total1).toFixed(1) : '—') + 'x payout';
+    if (sub2) sub2.textContent = total2.toFixed(2) + ' USDai in pool · ' + (total1 > 0 ? (pool / total2).toFixed(1) : '—') + 'x payout';
+
+    // Hide claim buttons by default every refresh
+    ['claimbtn1','claimbtn2'].forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+
+    if (!walletAddr) return;
+
+    const ub = await contract.getUserBet(roundId, walletAddr);
+    const userAmt  = parseFloat(ethers.formatEther(ub.amount));
+    const userSide = Number(ub.side);
+    const winner   = Number(rd.winner);
+
+    console.log('Pool stats:', { roundId, total1, total2, pool, userAmt, userSide, winner, settled: rd.settled, claimed: ub.claimed });
+
+    if (userAmt > 0) {
+      // Mark the side they bet on
+      var myBtnId    = userSide === 1 ? 'betbtn1' : 'betbtn2';
+      var otherBtnId = userSide === 1 ? 'betbtn2' : 'betbtn1';
+      var myBtn    = document.getElementById(myBtnId);
+      var otherBtn = document.getElementById(otherBtnId);
+      if (myBtn)    { myBtn.textContent = '\u2713 ' + userAmt.toFixed(2) + ' BET'; }
+      if (otherBtn) { otherBtn.disabled = true; otherBtn.textContent = 'ALREADY BET'; }
+
+      // Show claim button if settled + user won + not yet claimed
+      if (rd.settled && !ub.claimed && winner !== 0 && userSide === winner) {
+        var claimId = userSide === 1 ? 'claimbtn1' : 'claimbtn2';
+        var cb = document.getElementById(claimId);
+        if (cb) {
+          cb.style.display = 'block';
+          console.log('CLAIM BUTTON SHOWN for round', roundId);
+        }
+      }
+    }
+  } catch(e) { console.log('fetchPoolStats error:', e.message); }
+}
+
+fetchState();
+setInterval(fetchState, 15000);
+setInterval(function() {
+  if (curRound && curRound.bettingRoundId) fetchPoolStats(curRound.bettingRoundId);
+}, 10000);
+function scheduleRebalance() {
+  var delay = (2 + Math.random() * 4) * 60 * 1000;
+  setTimeout(function() {
+    fetch('/api/rebalance').catch(function(){});
+    scheduleRebalance();
+  }, delay);
+}
+scheduleRebalance();
+timerIval = setInterval(tickTimer, 1000);
+
+async function claimWinnings(roundId) {
+  if (!walletAddr) { alert('Connect wallet first'); return; }
+  roundId = roundId !== undefined ? roundId : (curRound ? curRound.bettingRoundId : null);
+  if (roundId === null || roundId === undefined) { alert('No round to claim'); return; }
+
+  var btn1 = document.getElementById('claimbtn1');
+  var btn2 = document.getElementById('claimbtn2');
+  var bannerBtn = document.getElementById('claimBannerBtn');
+  var active = (btn1 && btn1.style.display !== 'none') ? btn1 : (btn2 && btn2.style.display !== 'none') ? btn2 : null;
+  if (active) { active.textContent = 'CLAIMING...'; active.disabled = true; }
+  if (bannerBtn) { bannerBtn.textContent = 'CLAIMING...'; bannerBtn.disabled = true; }
+
+  try {
+    await ensureLitVM();
+    const { ethers } = await import('https://esm.sh/ethers@6.13.0');
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(CONTRACTADDR, BATTLEABI, signer);
+    const tx = await contract.claim(Number(roundId));
+    await tx.wait();
+    if (active) { active.textContent = '✓ CLAIMED!'; }
+    if (bannerBtn) { bannerBtn.textContent = '✓ CLAIMED!'; }
+    // Hide after 3s
+    setTimeout(function() {
+      ['claimbtn1','claimbtn2'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) { el.style.display = 'none'; el.disabled = false; el.textContent = '🏆 CLAIM WINNINGS'; }
+      });
+      var banner = document.getElementById('claimBanner');
+      if (banner) banner.style.display = 'none';
+    }, 3000);
+    fetchUsdaiBalance();
+  } catch(e) {
+    console.log('claim error:', e.message);
+    if (active) { active.textContent = '🏆 CLAIM WINNINGS'; active.disabled = false; }
+    if (bannerBtn) { bannerBtn.textContent = 'CLAIM NOW'; bannerBtn.disabled = false; }
+    alert(e.reason || e.shortMessage || e.message || 'Claim failed');
+  }
+}
+
+</script>
+</body>
+</html>
